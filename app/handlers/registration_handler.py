@@ -1,11 +1,20 @@
-
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from aiogram.filters import Command
-from app.states.UserRegistration import UserRegistration
+
+from app.database import async_session_maker
+from app.reposetory.user_repository import UserRepository
+from app.services.user_service import UserService
+from app.states.user_registration import UserRegistration
 
 reg_router = Router()
+
+
+async def get_service() -> UserService:
+    async with async_session_maker() as session:
+        repo = UserRepository(session)
+        return UserService(repo)
 
 
 @reg_router.message(Command('registration'))
@@ -42,4 +51,7 @@ async def capture_patronymic(message: Message, state: FSMContext):
     await message.answer(f"Ваша фамилия {message.text}.\nНа этом все!")
     data = await state.get_data()
     print(data)
+    print(type(data))
+    service = await get_service()
+    await service.register_user(data=data, tg_id=message.from_user.id)
     await state.clear()
