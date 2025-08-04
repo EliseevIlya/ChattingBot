@@ -22,7 +22,7 @@ class UserRepository:
         return result.scalar_one_or_none()
 
     async def add_user(self, user_create: User):
-        if await self.user_exists(user_create.username):
+        if await self.get_user_by_tg_id(user_create.tg_id):
             raise ValidationError('User with this username already exists')
         self.session.add(user_create)
         await self.session.commit()
@@ -36,5 +36,7 @@ class UserRepository:
         result = await self.session.execute(select(User))
         return result.scalars().all()
 
-    async def update_user(self, user_updated: User):
-        db_user = await self.get_user_by_username(user_updated.username)
+    async def update_user(self, user: User):
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)

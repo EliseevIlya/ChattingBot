@@ -53,14 +53,12 @@ async def capture_last_name(message: Message, state: FSMContext):
     await message.answer(f"Ваша фамилия {message.text}.\nВведите отчество")
     await state.set_state(UserRegistration.patronymic)
 
-
+#TODO обработка ошибки если пользователь уже есть
 @reg_router.message(F.text, UserRegistration.patronymic)
 async def capture_patronymic(message: Message, state: FSMContext):
     await state.update_data(patronymic=message.text)
     await message.answer(f"Ваша фамилия {message.text}.\nНа этом все!")
     data = await state.get_data()
-    print(data)
-    print(type(data))
     async with get_service() as service:
         await service.register_user(data=data, tg_id=message.from_user.id)
     await state.clear()
