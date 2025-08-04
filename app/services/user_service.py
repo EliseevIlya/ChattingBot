@@ -16,3 +16,6 @@ class UserService:
             is_admin=is_admin
         )
         await self.repository.add_user(user_create=user_data)
+
+    async def user_exists(self, username: str) -> bool:
+        return await self.repository.user_exists(username=username)

@@ -1,3 +1,6 @@
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator
+
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -11,10 +14,12 @@ from app.states.user_registration import UserRegistration
 reg_router = Router()
 
 
-async def get_service() -> UserService:
+@asynccontextmanager
+async def get_service() -> AsyncGenerator[UserService, Any]:
     async with async_session_maker() as session:
         repo = UserRepository(session)
-        return UserService(repo)
+        service = UserService(repo)
+        yield service
 
 
 @reg_router.message(Command('registration'))
@@ -25,9 +30,13 @@ async def registration_handler(message: Message, state: FSMContext):
 
 @reg_router.message(F.text, UserRegistration.username)
 async def capture_username(message: Message, state: FSMContext):
-    await state.update_data(username=message.text)
-    await message.answer(f"Ваш username {message.text}.\nВведите имя")
-    await state.set_state(UserRegistration.first_name)
+    async with get_service() as service:
+        if await service.user_exists(message.text):
+            await message.answer("Такой username уже существует, выберете другой")
+        else:
+            await state.update_data(username=message.text)
+            await message.answer(f"Ваш username {message.text}.\nВведите имя")
+            await state.set_state(UserRegistration.first_name)
 
 
 @reg_router.message(F.text, UserRegistration.first_name)
@@ -52,6 +61,6 @@ async def capture_patronymic(message: Message, state: FSMContext):
     data = await state.get_data()
     print(data)
     print(type(data))
-    service = await get_service()
-    await service.register_user(data=data, tg_id=message.from_user.id)
+    async with get_service() as service:
+        await service.register_user(data=data, tg_id=message.from_user.id)
     await state.clear()
