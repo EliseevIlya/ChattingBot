@@ -1,12 +1,11 @@
 from datetime import datetime
-from operator import index
 from typing import Annotated
 
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
 
-from config import get_db_url
+from app.config import get_db_url
 
 DATABASE_URL = get_db_url()
 
