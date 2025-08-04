@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.models.user import User
-from dto.UserCreate import UserCreate
 
 
 class UserRepository:
@@ -32,8 +31,8 @@ class UserRepository:
         result = await self.session.execute(select(User).where(User.username == username))
         return result.scalar_one_or_none() is not None
 
-    async def get_all_users(self) -> List[User]:
-        result = await self.session.execute(select(User))
+    async def get_all_users(self, offset: int = 0, limit: int = 5) -> List[User]:
+        result = await self.session.execute(select(User).offset(offset).limit(limit))
         return result.scalars().all()
 
     async def update_user(self, user: User):

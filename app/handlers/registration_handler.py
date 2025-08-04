@@ -7,6 +7,7 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.filters import Command
 
 from app.database import async_session_maker
+from app.reposetory.message_repository import MessageRepository
 from app.reposetory.user_repository import UserRepository
 from app.services.user_service import UserService
 from app.states.user_registration import UserRegistration
@@ -17,8 +18,9 @@ reg_router = Router()
 @asynccontextmanager
 async def get_service() -> AsyncGenerator[UserService, Any]:
     async with async_session_maker() as session:
-        repo = UserRepository(session)
-        service = UserService(repo)
+        user_repo = UserRepository(session)
+        message_repo = MessageRepository(session)
+        service = UserService(user_repository=user_repo, message_repository=message_repo)
         yield service
 
 
