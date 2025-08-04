@@ -15,7 +15,7 @@ settings = Settings()
 
 
 def get_db_url():
-    return f"sqlite+aiosqlite:///{settings.DB_NAME}"
+    return f"sqlite+aiosqlite:///../{settings.DB_NAME}"
 
 
 def get_token():
