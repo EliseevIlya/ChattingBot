@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base, int_pk, str_null_false
 
 
-class Message(Base):
+class MessagesDBModel(Base):
     __tablename__ = 'messages'
 
     id: Mapped[int_pk]
