@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import index
 from typing import Annotated
 
 from sqlalchemy import func
@@ -13,10 +14,10 @@ engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 # настройка аннотаций
-int_pk = Annotated[int, mapped_column(primary_key=True)]
+int_pk = Annotated[int, mapped_column(primary_key=True, index=True)]
 created_at = Annotated[datetime, mapped_column(server_default=func.now())]
 updated_at = Annotated[datetime, mapped_column(server_default=func.now(), onupdate=datetime.now)]
-str_uniq = Annotated[str, mapped_column(unique=True, nullable=False)]
+str_uniq = Annotated[str, mapped_column(unique=True, nullable=False, index=True)]
 str_null_true = Annotated[str, mapped_column(nullable=True)]
 str_null_false = Annotated[str, mapped_column(nullable=False)]
 
