@@ -12,5 +12,5 @@ class User(Base):
     first_name: Mapped[str_null_false]
     last_name: Mapped[str_null_false]
     patronymic: Mapped[str_null_true]
-    tg_id: Mapped[int] = mapped_column(Integer, unique=True,nullable=False, index=True)
+    tg_id: Mapped[int] = mapped_column(Integer, unique=False,nullable=False, index=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)

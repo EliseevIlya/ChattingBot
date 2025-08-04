@@ -10,7 +10,7 @@ from os.path import dirname, abspath
 
 from app.database import DATABASE_URL, Base
 from app.models import user
-from app.models import message
+from app.models import messages_db_model
 
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
